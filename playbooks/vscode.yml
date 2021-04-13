@@ -1,0 +1,33 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    vscode_state: present
+
+  tasks:
+    - name: Add Microsoft key
+      ansible.builtin.apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        state: "{{ vscode_state }}"
+
+    - name: Add Microsoft repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://packages.microsoft.com/repos/code stable main"
+        state: "{{ vscode_state }}"
+        update_cache: true
+    - name: Install apt-transport-https
+      ansible.builtin.apt:
+        name: apt-transport-https
+        state: present
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        # ignore_errors: true there was a problem with a missing Release file for
+        # new beta version of ubuntu in a repo which I added manually
+    - name: Install VS Code
+      ansible.builtin.apt:
+        name: code
+        state: "{{ vscode_state }}"
+# TODO: figure out how to install addons
