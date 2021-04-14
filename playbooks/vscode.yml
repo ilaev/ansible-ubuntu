@@ -30,4 +30,22 @@
       ansible.builtin.apt:
         name: code
         state: "{{ vscode_state }}"
-# TODO: figure out how to install addons
+    - name: Install My VS Code Extensions
+      import_role:
+        name: gantsign.visual-studio-code-extensions
+      vars:
+        users:
+          - username: limar
+            visual_studio_code_extensions:
+              - angular.ng-template
+              - steoates.autoimport
+              - tamasfe.even-better-toml
+              - ms-azuretools.vscode-docker
+              - hyzeta.vscode-theme-github-light
+              - thenikso.github-plus-theme
+              - eamodio.gitlens
+              - golang.Go
+              - wayou.vscode-todo-highlight
+              - fabiospampinato.vscode-todo-plus
+              - vscode-icons-team.vscode-icons
+              - redhat.vscode-yaml

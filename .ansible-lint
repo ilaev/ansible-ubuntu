@@ -1,0 +1,6 @@
+exlude_paths:
+  - roles/
+skip_list:
+  - role-name
+warn_list:
+  - role-name
