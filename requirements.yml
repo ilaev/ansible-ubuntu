@@ -1,3 +1,5 @@
 ---
+collections:
+  - name: ansible.posix
 roles:
   - name: gantsign.visual-studio-code-extensions

@@ -1,0 +1,26 @@
+---
+- hosts: devpc
+  become: true
+
+  tasks:
+    - name: Create mount directories
+      ansible.builtin.file:
+        state: directory
+        path: "{{ item }}"
+        mode: '0700'
+      loop:
+        - /media/disk2/
+        - /media/disk3/
+        - /media/disk4/
+
+    - name: Configure fstab and mount
+      ansible.posix.mount:
+        path: "{{ item.path }}"
+        src: "{{ item.src }}"
+        fstype: ntfs
+        opts: rw,auto,users,exec,nls=utf8,umask=003,gid=46,uid=1000
+        state: mounted
+      loop:
+        - { path: /media/disk2, src: UUID=BE1C474F1C47023F }
+        - { path: /media/disk3, src: UUID=8686DA3A86DA2A87 }
+        - { path: /media/disk4, src: UUID=5860E5D660E5BB40 }
