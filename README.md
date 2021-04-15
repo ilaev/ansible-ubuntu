@@ -25,7 +25,7 @@ python -m pip install ansible
 
 Then download this repo and unarchive in your desired directory.
 
-Should the roles folder be empty, install third-party roles/collections before executing any playbooks:
+Install third-party roles/collections before executing any playbooks:
 
 ```
 ansible-galaxy install -r ./requirements.yml

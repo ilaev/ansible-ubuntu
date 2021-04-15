@@ -1,0 +1,47 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    dotnet_state: present
+    dotnet_download_dest: ~/installed_with_ansible/dotnet/
+
+  tasks:
+    - name: Create tmp download directory
+      ansible.builtin.file:
+        path: "{{ dotnet_download_dest }}"
+        state: directory
+        mode: '0600'
+      when: dotnet_state == 'present'
+
+    - name: Download MS packages
+      ansible.builtin.get_url:
+        url: https://packages.microsoft.com/config/ubuntu/21.04/packages-microsoft-prod.deb
+        dest: "{{ dotnet_download_dest }}microsoft-packages.deb"
+        mode: '0600'
+      when: dotnet_state == 'present'
+
+    - name: Install MS packages
+      ansible.builtin.apt:
+        deb: "{{ dotnet_download_dest }}microsoft-packages.deb"
+      when: dotnet_state == 'present'
+
+    - name: Install .NET dependencies
+      ansible.builtin.apt:
+        name: apt-transport-https
+        update_cache: true
+        cache_valid_time: 3600
+        state: present
+
+    - name: Install .NET SDK 5
+      ansible.builtin.apt:
+        name: dotnet-sdk-5.0
+        update_cache: true
+        cache_valid_time: 3600
+        state: "{{ dotnet_state }}"
+
+    - name: Delete tmp download directory
+      ansible.builtin.file:
+        state: absent
+        path: "{{ dotnet_download_dest }}"
+      when: dotnet_state == 'present'
