@@ -13,48 +13,87 @@
         state: "{{ theme_state }}"
         update_cache: true
         cache_valid_time: 3600
+
     - name: Install Gnome Tweaks
       become: true
       ansible.builtin.apt:
         name: gnome-tweaks
         state: "{{ theme_state }}"
+
     - name: Install Gnome shell extensions
       become: true
       ansible.builtin.apt:
         name: gnome-shell-extensions
         state: "{{ theme_state }}"
+
     - name: Create directories if they don't exist
       ansible.builtin.file:
         state: directory
         path: "{{ vimix_theme_destination }}"
       when: theme_state == 'present'
+
     - name: Download vimix light theme github repo
       ansible.builtin.get_url:
         url: https://github.com/vinceliuice/vimix-gtk-themes/archive/master.zip
         dest: "{{ vimix_theme_destination }}master.zip"
         mode: '0700'
+
     - name: Unzip theme archive
       ansible.builtin.unarchive:
         src: "{{ vimix_theme_destination }}master.zip"
         dest: "{{ vimix_theme_destination }}"
+
     - name: Delete theme archive on install
       file:
         state: absent
         path: "{{ vimix_theme_destination }}master.zip"
       when: theme_state == 'present'
+
     - name: Install vimix-light theme
       ansible.builtin.shell:
         chdir: "{{ vimix_theme_destination }}vimix-gtk-themes-master"
         cmd: ./install.sh
       when: theme_state == 'present'
+
     - name: Uninstall vimix-light theme
       # may not work since the script does not support args
       ansible.builtin.shell:
         chdir: "{{ vimix_theme_destination }}"
         cmd: bash vimix-installer
       when: theme_state == 'absent'
+
     - name: Delete tmp vimix-light theme github repo
       file:
         state: absent
         path: "{{ vimix_theme_destination }}"
       when: theme_state == 'absent'
+
+    - name: Enabled 'Extensions > User themes (load shell themes from user directory)'
+      ansible.builtin.dconf:
+        key: "/org/gnome/shell/enabled-extensions"
+        value: "['user-theme@gnome-shell-extensions.gcampax.github.com']"
+        state: "{{ theme_state }}"
+
+    - name: Set 'vimix-light-doder' shell theme 'Appearance > Shell'
+      ansible.builtin.dconf:
+        key: "/org/gnome/shell/extensions/user-theme/name"
+        value: "'vimix-light-doder'"
+        state: "{{ theme_state }}"
+
+    - name: Set theme 'Appearance > Applications'
+      ansible.builtin.dconf:
+        key: "/org/gnome/desktop/interface/gtk-theme"
+        value: "'vimix-light-doder'"
+        state: "{{ theme_state }}"
+
+    - name: Set icon theme 'Appearance > Cursor'
+      ansible.builtin.dconf:
+        key: "/org/gnome/desktop/interface/cursor-theme"
+        value: "'Paper'"
+        state: "{{ theme_state }}"
+
+    - name: Set icon theme 'Appearance > Icons'
+      ansible.builtin.dconf:
+        key: "/org/gnome/desktop/interface/icon-theme"
+        value: "'Paper'"
+        state: "{{ theme_state }}"
