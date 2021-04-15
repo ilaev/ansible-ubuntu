@@ -1,0 +1,17 @@
+---
+- hosts: devpc
+  become: true
+  vars:
+    system_state: present
+  tasks:
+    - name: Install python3-pip in /usr/bin/python3
+      ansible.builtin.apt:
+        name: python3-pip
+        state: "{{ system_state }}"
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install psutil python library (required by ansible.builtin.dconf)
+      ansible.builtin.pip:
+        name: psutil
+        state: "{{ system_state }}"
