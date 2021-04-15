@@ -1,0 +1,50 @@
+---
+- hosts: devpc
+
+  vars:
+    discord_state: present
+    discord_download_dest: "/home/{{ansible_user}}/installed-with-ansible/discord/"
+
+  tasks:
+    - name: Create tmp directory
+      ansible.builtin.file:
+        state: directory
+        path: "{{ discord_download_dest }}"
+        mode: '0700'
+      when: discord_state == 'present'
+
+    - name: Download discord .deb file from offial page
+      ansible.builtin.get_url:
+        url: https://discord.com/api/download?platform=linux&format=deb
+        dest: "{{ discord_download_dest }}discord.deb"
+        mode: '0700'
+
+    - name: Install dependencies
+      become: true
+      ansible.builtin.apt:
+        pkg:
+          - libatomic1
+          - libgconf-2-4
+          - libc++1
+          - gconf2-common
+          - libc++abi1
+        state: present
+      when: discord_state == 'present'
+
+    - name: Install Discord
+      become: true
+      ansible.builtin.apt:
+        deb: "{{ discord_download_dest }}discord.deb"
+      when: discord_state == 'present'
+
+    - name: Delete tmp directory
+      ansible.builtin.file:
+        state: absent
+        path: "{{ discord_download_dest }}"
+      when: discord_state == 'present'
+
+    - name: Uninstall Discord
+      ansible.builtin.apt:
+        name: discord
+        state: absent
+      when: discord_state == 'absent'
