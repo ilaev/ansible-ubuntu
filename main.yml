@@ -1,2 +1,4 @@
 ---
+- import_playbook: playbooks/system-requirements.yml
+- import_playbook: playbooks/ubuntu-theme.yml
 - import_playbook: playbooks/vscode.yml
