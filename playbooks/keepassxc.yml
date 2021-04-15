@@ -1,0 +1,14 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    keepassxc_state: present
+
+  tasks:
+    - name: Install KeePassXC
+      ansible.builtin.apt:
+        name: keepassxc
+        state: "{{ keepassxc_state }}"
+        update_cache: true
+        cache_valid_time: 3600
