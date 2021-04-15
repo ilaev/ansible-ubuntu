@@ -1,0 +1,33 @@
+---
+- hosts: devpc
+
+  vars:
+    joplin_state: present
+    joplin_download_dest: ~/installed-with-ansible/joplin/
+
+  tasks:
+    - name: Create tmp directory if it does not exist
+      ansible.builtin.file:
+        state: directory
+        path: "{{ joplin_download_dest }}"
+        mode: '0700'
+      when: joplin_state == 'present'
+
+    - name: Download joplin installer
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_install_and_update.sh
+        dest: "{{ joplin_download_dest }}joplin_install_and_update.sh"
+        mode: '0700'
+
+    - name: Install joplin with shell script
+      ansible.builtin.shell:
+        chdir: "{{ joplin_download_dest }}"
+        cmd: ./joplin_install_and_update.sh
+      when: joplin_state == 'present'
+
+    - name: Delete tmp directory
+      ansible.builtin.file:
+        state: absent
+        path: "{{ joplin_download_dest }}"
+      when: joplin_state == 'present'
+# TODO: add uninstall as soon as joplin has merged the uninstall script
