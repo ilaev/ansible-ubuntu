@@ -1,0 +1,63 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    hugo_state: present
+    hugo_github_username: gohugoio
+    hugo_github_reponame: hugo
+    hugo_download_directory: '/tmp/ansible/hugo/'
+
+  tasks:
+    - name: Create tmp download directory.
+      ansible.builtin.file:
+        state: directory
+        path: "{{ hugo_download_directory }}"
+        mode: '0777'
+      when: hugo_state == 'present'
+
+    - name: Get assets
+      ansible.builtin.get_url:
+        url: "https://api.github.com/repos/{{ hugo_github_username }}/{{ hugo_github_reponame }}/releases/latest"
+        mode: '0777'
+        headers:
+          Accept: "application/vnd.github.v3+json"
+        dest: "{{ hugo_download_directory}}"
+      when: hugo_state == 'present'
+
+    - name: Get download url
+      ansible.builtin.shell:
+        chdir: "{{ hugo_download_directory }}"
+        cmd: cat ./latest | jq '.assets | .[] | select(.browser_download_url | contains("hugo_extended")) | select(.browser_download_url | contains("_Linux-64bit.deb")) | .url' | sed -e 's/^"//' -e 's/"$//'
+      register: "download_url"
+      when: hugo_state == 'present'
+
+    - ansible.builtin.debug:
+        msg: "{{ download_url.stdout }}"
+      when: hugo_state == 'present'
+
+    - name: Download latest release
+      ansible.builtin.get_url:
+        url: "{{ download_url.stdout }}"
+        dest: "{{ hugo_download_directory }}latest-hugo-version.deb"
+        mode: '0777'
+        headers:
+          Accept: "application/octet-stream"
+      when: hugo_state == 'present'
+
+    - name: Install Hugo extended
+      ansible.builtin.apt:
+        deb: "{{ hugo_download_directory }}latest-hugo-version.deb"
+      when: hugo_state == 'present'
+
+    - name: Delete tmp download directory.
+      ansible.builtin.file:
+        state: absent
+        path: "{{ hugo_download_directory }}"
+      when: hugo_state == 'present'
+
+    - name: Uninstall Hugo
+      ansible.builtin.apt:
+        name: hugo
+        state: absent
+      when: hugo_state == 'absent'
