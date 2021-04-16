@@ -15,3 +15,8 @@
       ansible.builtin.pip:
         name: psutil
         state: "{{ system_state }}"
+
+    - name: Install jq (filter json)
+      ansible.builtin.apt:
+        name: jq
+        state: "{{ system_state }}"
