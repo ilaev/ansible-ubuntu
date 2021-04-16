@@ -1,0 +1,117 @@
+---
+- hosts: devpc
+  vars_files:
+    - ../vars/git.yml
+  vars:
+    git_state: present
+
+  tasks:
+    - name: Install git
+      become: true
+      ansible.builtin.apt:
+        name: git
+        state: "{{ git_state }}"
+
+    - name: Install Meld
+      become: true
+      ansible.builtin.apt:
+        name: meld
+        state: "{{ git_state }}"
+
+    - name: Configure git - pull.rebase
+      community.general.git_config:
+        name: pull.rebase
+        value: true
+        scope: global
+        state: present
+
+    - name: Configure git - fetch.prune
+      community.general.git_config:
+        name: fetch.prune
+        value: false
+        scope: global
+        state: present
+
+    - name: Configure git - rebase.autoStash
+      community.general.git_config:
+        name: rebase.autoStash
+        value: true
+        scope: global
+        state: present
+
+    - name: Configure git - core.autocrlf
+      community.general.git_config:
+        name: core.autocrlf
+        value: input
+        scope: global
+        state: present
+
+    - name: Configure git - merge.tool
+      community.general.git_config:
+        name: merge.tool
+        value: meld
+        scope: global
+        state: present
+
+    - name: Configure git - merge.guitool
+      community.general.git_config:
+        name: merge.guitool
+        value: meld
+        scope: global
+        state: present
+
+    - name: Configure git - mergetool.meld.path
+      community.general.git_config:
+        name: mergetool.meld.path
+        value: /usr/bin/meld
+        scope: global
+        state: present
+
+    - name: Configure git - mergetool.meld.cmd
+      community.general.git_config:
+        name: mergetool.meld.cmd
+        value: 'meld "$LOCAL" "$BASE" "$REMOTE" --output "$MERGED"'
+        scope: global
+        state: present
+
+    - name: Configure git - diff.tool
+      community.general.git_config:
+        name: diff.tool
+        value: meld
+        scope: global
+        state: present
+
+    - name: Configure git - merge.guitool
+      community.general.git_config:
+        name: diff.guitool
+        value: meld
+        scope: global
+        state: present
+
+    - name: Configure git - difftool.meld.path
+      community.general.git_config:
+        name: difftool.meld.path
+        value: /usr/bin/meld
+        scope: global
+        state: present
+
+    - name: Configure git - difftool.meld.cmd
+      community.general.git_config:
+        name: difftool.meld.cmd
+        value: 'meld "$LOCAL" "$REMOTE"'
+        scope: global
+        state: present
+
+    - name: Configure git - user.name
+      community.general.git_config:
+        name: user.name
+        value: Ramil Ilaev
+        scope: global
+        state: present
+
+    - name: Configure git - user.email
+      community.general.git_config:
+        name: user.email
+        value: "{{ git_email }}"
+        scope: global
+        state: present
