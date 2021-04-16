@@ -29,6 +29,8 @@
           - gconf2-common
           - libc++abi1
         state: present
+        update_cache: true
+        cache_valid_time: 3600
       when: discord_state == 'present'
 
     - name: Install Discord

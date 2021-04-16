@@ -3,6 +3,7 @@
 - import_playbook: playbooks/system.yml
 - import_playbook: playbooks/git.yml
 - import_playbook: playbooks/terminal.yml
+- import_playbook: playbooks/docker.yml
 - import_playbook: playbooks/ubuntu-theme.yml
 - import_playbook: playbooks/dotnet.yml
 - import_playbook: playbooks/keepassxc.yml
