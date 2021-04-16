@@ -37,7 +37,7 @@ ansible-galaxy install -r ./requirements.yml
 Either execute the *main.yml* playbook or execute a specific playbook inside the *playbooks* directory.
 
 ```
-ansible-playbook --ask-become-pass ./main.yml
+ansible-playbook --ask-become-pass --ask-vault-pass ./main.yml
 ```
 
 You will be asked to enter the sudo password of the user specified in the group_vars all.yml file.
