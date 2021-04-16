@@ -12,4 +12,5 @@
 - import_playbook: playbooks/joplin.yml
 - import_playbook: playbooks/discord.yml
 - import_playbook: playbooks/vscode.yml
+- import_playbook: playbooks/other-apps.yml
 

@@ -1,0 +1,16 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    mplayer_state: present
+
+  tasks:
+    - name: Install mplayer
+      ansible.builtin.apt:
+        pkg:
+          - mplayer
+          - mplayer-gui
+        state: "{{ mplayer_state }}"
+        update_cache: true
+        cache_valid_time: 3600
