@@ -3,14 +3,13 @@
   become: true
 
   vars:
-    mplayer_state: present
+    mpv_state: present
 
   tasks:
-    - name: Install mplayer
+    - name: Install mpv 
       ansible.builtin.apt:
         pkg:
-          - mplayer
-          - mplayer-gui
-        state: "{{ mplayer_state }}"
+          - mpv
+        state: "{{ mpv_state }}"
         update_cache: true
         cache_valid_time: 3600
