@@ -1,6 +1,7 @@
 ---
 - import_playbook: playbooks/system-requirements.yml
 - import_playbook: playbooks/system.yml
+- import_playbook: playbooks/firewall.yml
 - import_playbook: playbooks/git.yml
 - import_playbook: playbooks/terminal.yml
 - import_playbook: playbooks/docker.yml

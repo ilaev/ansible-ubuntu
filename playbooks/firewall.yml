@@ -1,0 +1,11 @@
+---
+- hosts: devpc
+  become: true
+
+  tasks:
+    - name: Firewall - Deny Incoming
+      community.general.ufw:
+        state: enabled
+        default: deny
+        direction: incoming
+        log: true

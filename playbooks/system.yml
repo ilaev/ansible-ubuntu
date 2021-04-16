@@ -24,3 +24,15 @@
         - { path: /media/disk2, src: UUID=BE1C474F1C47023F }
         - { path: /media/disk3, src: UUID=8686DA3A86DA2A87 }
         - { path: /media/disk4, src: UUID=5860E5D660E5BB40 }
+
+    - name: Disable cups.service (printer)
+      ansible.builtin.systemd:
+        state: stopped
+        name: cups.service
+        enabled: false
+
+    - name: Disable cups-browsed.service (printer)
+      ansible.builtin.systemd:
+        state: stopped
+        name: cups-browsed.service
+        enabled: false
