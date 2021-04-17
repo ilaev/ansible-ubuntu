@@ -39,7 +39,6 @@
         repo: "deb [arch=amd64 signed-by={{ node_keyring_path }}] https://deb.nodesource.com/{{ node_version }} {{ ansible_lsb.codename }} main"
         state: "{{ node_state }}"
         update_cache: true
-      when: node_state == 'present'
 
     - name: Install dependencies.
       ansible.builtin.apt:

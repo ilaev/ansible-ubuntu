@@ -10,6 +10,7 @@
 - import_playbook: playbooks/dotnet.yml
 - import_playbook: playbooks/node.yml
 - import_playbook: playbooks/postman.yml
+- import_playbook: playbooks/spotify.yml
 - import_playbook: playbooks/keepassxc.yml
 - import_playbook: playbooks/joplin.yml
 - import_playbook: playbooks/discord.yml

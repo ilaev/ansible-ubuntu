@@ -1,0 +1,48 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    spotify_state: present
+    spotify_download_dir: /tmp/ansible/spotify/
+    spotify_keyring_path: /usr/share/keyrings/spotifysource.gpg
+
+  tasks:
+    - name: Create tmp download directory.
+      ansible.builtin.file:
+        state: directory
+        path: "{{ spotify_download_dir }}"
+        mode: '0700'
+      when: spotify_state == 'present'
+
+    - name: Download Spotify's GPG key.
+      ansible.builtin.get_url:
+        url: https://download.spotify.com/debian/pubkey_0D811D58.gpg
+        dest: "{{ spotify_download_dir }}spotify.gpg"
+        mode: '0600'
+      when: spotify_state == 'present'
+
+    - name: Add Spotify's GPG key.
+      ansible.builtin.shell:
+        chdir: "{{ spotify_download_dir }}"
+        cmd: "gpg --dearmor -o {{ spotify_keyring_path }} {{ spotify_download_dir }}spotify.gpg"
+      when: spotify_state == 'present'
+
+    - name: Add Spotify's repository.
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by={{ spotify_keyring_path }}] http://repository.spotify.com stable non-free"
+        state: "{{ spotify_state }}"
+        update_cache: true
+
+    - name: Install Spotify client.
+      ansible.builtin.apt:
+        name: spotify-client
+        state: "{{ spotify_state }}"
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Delete tmp download dir.
+      ansible.builtin.file:
+        state: absent
+        path: "{{ spotify_download_dir }}"
+      when: spotify_state == 'present'
