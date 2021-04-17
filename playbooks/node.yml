@@ -1,0 +1,64 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    node_state: present
+    node_version: node_15.x
+    node_download_directory: /tmp/ansible/node/
+    node_keyring_path: /usr/share/keyrings/nodesource.gpg
+
+  tasks:
+    - name: Get node keyring.
+      ansible.builtin.stat:
+        path: "{{ node_keyring_path }}"
+      register: node_keyring_file
+
+    - name: Create tmp download directory.
+      ansible.builtin.file:
+        state: directory
+        path: "{{ node_download_directory }}"
+        mode: '0700'
+      when: node_state == 'present' and node_keyring_file.stat.exists == false
+
+    - name: Download node repo GPG key
+      ansible.builtin.get_url:
+        url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+        dest: "{{ node_download_directory }}"
+        mode: '0600'
+      when: node_state == 'present' and node_keyring_file.stat.exists == false
+
+    - name: Add node GPG key to /usr/share/keyrings/
+      ansible.builtin.shell:
+        chdir: "{{ node_download_directory }}"
+        cmd: "gpg --dearmor -o {{ node_keyring_path }} {{ node_download_directory }}nodesource.gpg.key"
+      when: node_state == 'present' and node_keyring_file.stat.exists == false
+
+    - name: Add node repository.
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by={{ node_keyring_path }}] https://deb.nodesource.com/{{ node_version }} {{ ansible_lsb.codename }} main"
+        state: "{{ node_state }}"
+        update_cache: true
+      when: node_state == 'present'
+
+    - name: Install dependencies.
+      ansible.builtin.apt:
+        pkg:
+          - apt-transport-https
+          - gnupg
+          - curl
+          - lsb-release
+        state: present
+
+    - name: Install nodejs.
+      ansible.builtin.apt:
+        name: nodejs
+        state: "{{ node_state }}"
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Delete tmp download directory.
+      ansible.builtin.file:
+        state: absent
+        path: "{{ node_download_directory }}"
+      when: node_state == 'present' and node_keyring_file.stat.exists == false
