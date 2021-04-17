@@ -1,0 +1,62 @@
+---
+- hosts: devpc
+
+  vars:
+    postman_state: present
+    postman_download_directory: /tmp/ansible/postman/
+    postman_install_directory: /opt/
+    postman_desktop_icon_path: ~/.local/share/applications/Postman.desktop
+
+  tasks:
+    - name: Create tmp download directory.
+      ansible.builtin.file:
+        state: directory
+        path: "{{ postman_download_directory }}"
+        mode: '0700'
+      when: postman_state == 'present' or postman_state == 'latest'
+
+    - name: Download latest postman version.
+      ansible.builtin.get_url:
+        url: https://dl.pstmn.io/download/latest/linux64
+        dest: "{{ postman_download_directory }}postman.tar.gz"
+        mode: '0600'
+      when: postman_state == 'present' or postman_state == 'latest'
+
+
+    - name: Install postman.
+      become: true
+      ansible.builtin.unarchive:
+        src: "{{ postman_download_directory }}postman.tar.gz"
+        dest: "{{ postman_install_directory }}"
+        owner: root
+        group: root
+        mode: '0755'
+        remote_src: true
+      when: postman_state == 'present' or postman_state == 'latest'
+
+    - name: Create desktop file for postman.
+      ansible.builtin.template:
+        src: ../templates/postman.desktop.j2
+        dest: "{{ postman_desktop_icon_path }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0662'
+      when: postman_state == 'present' or postman_state == 'latest'
+
+    - name: Delete tmp download directory.
+      ansible.builtin.file:
+        state: absent
+        path: "{{ postman_download_directory }}"
+      when: postman_state == 'present' or postman_state == 'latest'
+
+    - name: Uninstall postman.
+      ansible.builtin.file:
+        state: absent
+        path: "{{ postman_install_directory }}Postman"
+      when: postman_state == 'absent'
+
+    - name: Uninstall postman desktop icon.
+      ansible.builtin.file:
+        state: file
+        path: "{{ postman_desktop_icon_path }}"
+      when: postman_state == 'absent'
