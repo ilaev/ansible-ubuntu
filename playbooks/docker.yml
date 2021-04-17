@@ -4,7 +4,7 @@
 
   vars:
     docker_state: present
-    docker_download_dest: ~/installed_with_ansible/docker/
+    docker_download_dest: /tmp/ansible/docker/
     docker_keyring_path: /usr/share/keyrings/docker-archive-keyring.gpg
 
   tasks:
@@ -17,7 +17,7 @@
       ansible.builtin.file:
         state: directory
         path: "{{ docker_download_dest }}"
-        mode: '0600'
+        mode: '0700'
       when: docker_state == 'present' and docker_keyring_file.stat.exists == false
 
     - name: Download Docker's official GPG key.

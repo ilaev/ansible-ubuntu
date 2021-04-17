@@ -3,7 +3,7 @@
 
   vars:
     joplin_state: present
-    joplin_download_dest: ~/installed-with-ansible/joplin/
+    joplin_download_dest: /tmp/ansible/joplin/
 
   tasks:
     - name: Create tmp directory if it does not exist
@@ -17,7 +17,7 @@
       ansible.builtin.get_url:
         url: https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_install_and_update.sh
         dest: "{{ joplin_download_dest }}joplin_install_and_update.sh"
-        mode: '0700'
+        mode: '0600'
 
     - name: Install joplin with shell script
       ansible.builtin.shell:

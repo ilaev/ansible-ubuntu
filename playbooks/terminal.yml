@@ -5,7 +5,7 @@
     terminal_state: present
     oh_my_zsh_state: present
     current_shell: "{{ lookup('env', 'SHELL') }}"
-    terminal_download_dest: '~/installed-with-ansible/terminal/'
+    terminal_download_dest: /tmp/ansible/terminal/'
 
   tasks:
     - name: Install zsh dependencies.

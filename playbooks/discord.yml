@@ -3,7 +3,7 @@
 
   vars:
     discord_state: present
-    discord_download_dest: "/home/{{ansible_user}}/installed-with-ansible/discord/"
+    discord_download_dest: "/tmp/ansible/discord/"
 
   tasks:
     - name: Create tmp directory
@@ -17,7 +17,7 @@
       ansible.builtin.get_url:
         url: https://discord.com/api/download?platform=linux&format=deb
         dest: "{{ discord_download_dest }}discord.deb"
-        mode: '0700'
+        mode: '0600'
 
     - name: Install dependencies
       become: true

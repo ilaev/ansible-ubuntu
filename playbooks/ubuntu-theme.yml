@@ -3,7 +3,7 @@
 
   vars:
     theme_state: present
-    vimix_theme_destination: ~/installed-with-ansible/vimix-theme/
+    vimix_theme_destination: /tmp/ansible/vimix-theme/
 
   tasks:
     - name: Install paper icon theme
@@ -30,13 +30,14 @@
       ansible.builtin.file:
         state: directory
         path: "{{ vimix_theme_destination }}"
+        mode: '0700'
       when: theme_state == 'present'
 
     - name: Download vimix light theme github repo
       ansible.builtin.get_url:
         url: https://github.com/vinceliuice/vimix-gtk-themes/archive/master.zip
         dest: "{{ vimix_theme_destination }}master.zip"
-        mode: '0700'
+        mode: '0600'
 
     - name: Unzip theme archive
       ansible.builtin.unarchive:

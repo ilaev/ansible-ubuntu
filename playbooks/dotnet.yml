@@ -4,14 +4,14 @@
 
   vars:
     dotnet_state: present
-    dotnet_download_dest: ~/installed_with_ansible/dotnet/
+    dotnet_download_dest: /tmp/ansible/dotnet/
 
   tasks:
     - name: Create tmp download directory
       ansible.builtin.file:
         path: "{{ dotnet_download_dest }}"
         state: directory
-        mode: '0600'
+        mode: '0700'
       when: dotnet_state == 'present'
 
     - name: Download MS packages
