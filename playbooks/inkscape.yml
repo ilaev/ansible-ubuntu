@@ -1,0 +1,20 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    inkscape_state: absent
+
+  tasks:
+    - name: Add inkscape_state's ppa and install its signing key.
+      ansible.builtin.apt_repository:
+        repo: 'ppa:inkscape.dev/stable'
+        state: "{{ inkscape_state }}"
+        update_cache: true
+
+    - name: Install Inkscape.
+      ansible.builtin.apt:
+        name: inkscape
+        state: "{{ inkscape_state }}"
+        update_cache: true
+        cache_valid_time: 3600
