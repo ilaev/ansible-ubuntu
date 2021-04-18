@@ -1,0 +1,14 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    vbox_state: present
+
+  tasks:
+    - name: Install Virtualbox.
+      ansible.builtin.apt:
+        name: virtualbox
+        state: "{{ vbox_state }}"
+        update_cache: true
+        cache_valid_time: 3600
