@@ -4,6 +4,7 @@
 
   vars:
     mpv_state: present
+    krita_state: present
 
   tasks:
     - name: Install mpv 
@@ -13,3 +14,11 @@
         state: "{{ mpv_state }}"
         update_cache: true
         cache_valid_time: 3600
+
+    - name: Install Krita.
+      ansible.builtin.krita:
+        name: krita
+        state: "{{ krita_state }}"
+        update_cache: true
+        cache_valid_time: 3600
+
