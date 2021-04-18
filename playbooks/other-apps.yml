@@ -5,9 +5,11 @@
   vars:
     mpv_state: present
     krita_state: present
+    gnome_sushi_state: present
+    gimp_state: present
 
   tasks:
-    - name: Install mpv 
+    - name: Install mpv
       ansible.builtin.apt:
         pkg:
           - mpv
@@ -16,9 +18,22 @@
         cache_valid_time: 3600
 
     - name: Install Krita.
-      ansible.builtin.krita:
+      ansible.builtin.apt:
         name: krita
         state: "{{ krita_state }}"
         update_cache: true
         cache_valid_time: 3600
 
+    - name: Install Gnome sushi
+      ansible.builtin.apt:
+        name: gnome-sushi
+        state: "{{ gnome_sushi_state }}"
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install gimp
+      ansible.builtin.apt:
+        name: gimp
+        state: "{{ gimp_state }}"
+        update_cache: true
+        cache_valid_time: 3600
