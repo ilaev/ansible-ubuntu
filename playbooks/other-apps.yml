@@ -17,6 +17,14 @@
         update_cache: true
         cache_valid_time: 3600
 
+    - name: Configure mpv.
+      ansible.builtin.template:
+        src: ../templates/mpv.conf.j2
+        dest: "/home/{{ ansible_user }}/.config/mpv/mpv.conf"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0664'
+
     - name: Install Krita.
       ansible.builtin.apt:
         name: krita
