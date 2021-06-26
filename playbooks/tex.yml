@@ -1,0 +1,15 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    texlive_state: present
+
+  tasks:
+    - name: Install Tex Live.
+      ansible.builtin.apt:
+        pkg:
+          - texlive-full
+        state: "{{ texlive_state }}"
+        update_cache: true
+        cache_valid_time: 3600

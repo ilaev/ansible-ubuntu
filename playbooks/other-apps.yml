@@ -7,6 +7,8 @@
     krita_state: present
     hexchat_state: present
     gimp_state: present
+    htop_state: present
+    calibre_state: present
 
   tasks:
     - name: Install mpv
@@ -43,5 +45,19 @@
       ansible.builtin.apt:
         name: hexchat
         state: "{{ hexchat_state }}"
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install htop (interactive process viewer)
+      ansible.builtin.apt:
+        name: htop
+        state: "{{ htop_state }}"
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install calibre
+      ansible.builtin.apt:
+        name: calibre
+        state: "{{ calibre_state }}"
         update_cache: true
         cache_valid_time: 3600
