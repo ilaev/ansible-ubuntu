@@ -9,6 +9,7 @@
 - import_playbook: playbooks/ubuntu-theme.yml
 - import_playbook: playbooks/dotnet.yml
 - import_playbook: playbooks/node.yml
+- import_playbook: playbooks/npm.yml
 - import_playbook: playbooks/postman.yml
 - import_playbook: playbooks/inkscape.yml
 - import_playbook: playbooks/spotify.yml
@@ -17,4 +18,7 @@
 - import_playbook: playbooks/discord.yml
 - import_playbook: playbooks/vscode.yml
 - import_playbook: playbooks/other-apps.yml
-
+- import_playbook: playbooks/joplin.yml
+- import_playbook: playbooks/npm.yml
+- import_playbook: playbooks/tex.yml
+- import_playbook: playbooks/youtubedl.yml

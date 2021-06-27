@@ -74,11 +74,18 @@
         cmd: sh install.sh --skip-chsh --unattended --keep-zshrc
       when: oh_my_zsh_state == 'present' and oh_my_zsh_directory.stat.exists == false or oh_my_zsh_state == 'latest'
 
-    - name: Configure Oh My Zsh.
+    - name: Configure Oh My Zsh - theme.
       ansible.builtin.lineinfile:
         path: ~/.zshrc
         regexp: '^ZSH_THEME='
         line: ZSH_THEME=agnoster
+      when: oh_my_zsh_state == 'present' and oh_my_zsh_directory.stat.exists == false or oh_my_zsh_state == 'latest'
+
+    - name: Configure Oh My Zsh - python alias.
+      ansible.builtin.lineinfile:
+        path: ~/.zshrc
+        regexp: '^alias python='
+        line: python=python3
       when: oh_my_zsh_state == 'present' and oh_my_zsh_directory.stat.exists == false or oh_my_zsh_state == 'latest'
 
     - name: Delete tmp download directory.

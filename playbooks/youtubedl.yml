@@ -1,0 +1,23 @@
+---
+# Depending on how python is installed on the system, you may need at least an alias or a symlink from python3 to python 
+- hosts: devpc
+  become: true
+
+  vars:
+    youtubedl_state: present
+
+  tasks:
+    - name: Install latest youtube-dl version.
+      ansible.builtin.get_url:
+        url: https://yt-dl.org/downloads/latest/youtube-dl
+        dest: /usr/local/bin/youtube-dl
+        mode: 0500
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+      when: youtubedl_state == 'present'
+
+    - name: Uninstall youtube-dl.
+      ansible.builtin.file:
+        state: absent
+        path: /usr/local/bin/youtube-dl
+      when: youtubedl_state == 'absent'
