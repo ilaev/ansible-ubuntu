@@ -4,7 +4,7 @@
 
   vars:
     node_state: present
-    node_version: node_15.x
+    node_version: node_16.x
     node_download_directory: /tmp/ansible/node/
     node_keyring_path: /usr/share/keyrings/nodesource.gpg
 
