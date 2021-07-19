@@ -3,7 +3,7 @@
   become: true
 
   vars:
-    inkscape_state: absent
+    inkscape_state: present
 
   tasks:
     - name: Add inkscape_state's ppa and install its signing key.
