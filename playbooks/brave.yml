@@ -1,0 +1,61 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    brave_state: present
+    brave_download_directory: /tmp/ansible/brave/
+    brave_keyring_path: /usr/share/keyrings/brave-browser-archive-keyring.gpg
+
+  tasks:
+    - name: Install dependencies.
+      ansible.builtin.apt:
+        pkg:
+          - apt-transport-https
+          - curl
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+      when: brave_state == 'present'
+  
+    - name: Get node keyring.
+      ansible.builtin.stat:
+        path: "{{ brave_keyring_path }}"
+      register: brave_keyring_file
+
+    - name: Create tmp download directory
+      ansible.builtin.file:
+        path: "{{ brave_download_directory }}"
+        state: directory
+        mode: '0700'
+      when: brave_state == 'present' and brave_keyring_file.stat.exists == false
+
+    - name: Download repo GPG key
+      ansible.builtin.get_url:
+        url: https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+        dest: "{{ brave_download_directory }}"
+        mode: '0600'
+      when: brave_state == 'present' and brave_keyring_file.stat.exists == false
+    
+    - name: Add GPG key to /usr/share/keyrings/
+      ansible.builtin.shell:
+        chdir: "{{ brave_download_directory }}"
+        cmd: "gpg --dearmor -o {{ brave_keyring_path }} {{ brave_download_directory }}brave-browser-archive-keyring.gpg"
+      when: brave_state == 'present' and brave_keyring_file.stat.exists == false
+
+    - name: Add brave repository.
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by={{ brave_keyring_path }}] https://brave-browser-apt-release.s3.brave.com/ stable main"
+        state: "{{ brave_state }}"
+        update_cache: true
+
+    - name: Install brave-browser.
+      ansible.builtin.apt:
+        pkg:
+          - brave-browser
+        state: "{{ brave_state }}"
+    
+    - name: Delete tmp download directory
+      ansible.builtin.file:
+        state: absent
+        path: "{{ brave_download_directory }}"
