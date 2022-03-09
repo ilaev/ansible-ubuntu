@@ -9,7 +9,7 @@
   tasks:
     - name: Install latest youtube-dl version.
       ansible.builtin.get_url:
-        url: https://yt-dl.org/downloads/latest/youtube-dl
+        url: https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp
         dest: /usr/local/bin/youtube-dl
         mode: 0500
         owner: "{{ ansible_user }}"
