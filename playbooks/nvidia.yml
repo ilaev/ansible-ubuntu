@@ -1,0 +1,15 @@
+---
+- hosts: devpc
+
+  vars:
+    nvidia_state: present
+    nvidia_drivers: 
+
+  tasks:
+    - name: Add nvidia ppa
+      ansible.builtin.apt_repository:
+        repo: ppa:graphics-drivers/ppa
+        state: "{{ nvidia_state }}"
+
+    - name: Install nvidia drivers
+      ansible.builtin.apt_r

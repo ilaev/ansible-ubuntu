@@ -1,0 +1,12 @@
+---
+- hosts: devpc
+  vars:
+    shell_terminal_state: present
+    shell_prompt_state: present
+    terminator_state: present
+    current_shell: "{{ lookup('env', 'SHELL') }}"
+    current_home: "{{ lookup('env','HOME') }}"
+
+  tasks:
+    - debug:
+        msg: "{{ current_home }}/.starship/bin/"

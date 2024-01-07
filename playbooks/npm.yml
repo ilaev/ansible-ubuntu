@@ -31,11 +31,6 @@
           fi
 
     - name: Check if zsh is installed.
-      ansible.builtin.stat:
-        path: "{{ ansible_user_dir }}/.oh-my-zsh"
-      register: zsh_dir
-
-    - name: Check if zsh is installed.
       ansible.builtin.shell:
         cmd: which zsh
       register: which_zsh
@@ -51,4 +46,4 @@
           if [ -d "$HOME/{{ npm_global_directory_name }}" ] ; then
               PATH="{{ ansible_user_dir }}/.npm-global/bin:$PATH"
           fi
-      when: zsh_dir.stat.isdir is defined and zsh_dir.stat.isdir or which_zsh.rc == 0
+      when: which_zsh.rc == 0

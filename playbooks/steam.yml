@@ -1,0 +1,61 @@
+---
+- hosts: devpc
+
+  vars:
+    steam_state: present
+    steam_download_dest: "/tmp/ansible/steam/"
+
+  tasks:
+    - name: Create tmp directory
+      ansible.builtin.file:
+        state: directory
+        path: "{{ steam_download_dest }}"
+        mode: '0700'
+      when: steam_state == 'present'
+
+    - name: Download steam .deb file from official page
+      ansible.builtin.get_url:
+        url: https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb
+        dest: "{{ steam_download_dest }}steam.deb"
+        mode: '0600'
+
+    - name: Install dependencies
+      become: true
+      ansible.builtin.apt:
+        pkg:
+          - libc6:amd64
+          - libc6:i386
+          - libegl1:amd64
+          - libegl1:i386
+          - libgbm1:amd64
+          - libgbm1:i386 
+          - libgl1-mesa-dri:amd64
+          - libgl1-mesa-dri:i386 
+          - libgl1:amd64 
+          - libgl1:i386
+          - steam-libs-amd64:amd64
+          - steam-libs-i386:i386
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+      when: discord_state == 'present'
+
+
+
+    - name: Install steam
+      become: true
+      ansible.builtin.apt:
+        deb: "{{ steam_download_dest }}steam.deb"
+      when: steam_state == 'present'
+
+    - name: Delete tmp directory
+      ansible.builtin.file:
+        state: absent
+        path: "{{ steam_download_dest }}"
+      when: steam_state == 'present'
+
+    - name: Uninstall steam
+      ansible.builtin.apt:
+        name: steam
+        state: absent
+      when: steam_state == 'absent'

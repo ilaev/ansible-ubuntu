@@ -12,13 +12,13 @@
       ansible.builtin.file:
         state: directory
         path: "{{ hugo_download_directory }}"
-        mode: '0500'
+        mode: '0777'
       when: hugo_state == 'present'
 
     - name: Get assets
       ansible.builtin.get_url:
         url: "https://api.github.com/repos/{{ hugo_github_username }}/{{ hugo_github_reponame }}/releases/latest"
-        mode: '0500'
+        mode: '0777'
         headers:
           Accept: "application/vnd.github.v3+json"
         dest: "{{ hugo_download_directory}}"
@@ -39,7 +39,7 @@
       ansible.builtin.get_url:
         url: "{{ download_url.stdout }}"
         dest: "{{ hugo_download_directory }}latest-hugo-version.deb"
-        mode: '0500'
+        mode: '0777'
         headers:
           Accept: "application/octet-stream"
       when: hugo_state == 'present'
@@ -47,6 +47,7 @@
     - name: Install Hugo extended
       ansible.builtin.apt:
         deb: "{{ hugo_download_directory }}latest-hugo-version.deb"
+      become: true
       when: hugo_state == 'present'
 
     - name: Delete tmp download directory.
@@ -59,4 +60,5 @@
       ansible.builtin.apt:
         name: hugo
         state: absent
+      become: true
       when: hugo_state == 'absent'
