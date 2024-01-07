@@ -2,17 +2,20 @@
 - hosts: devpc
 
   vars:
-    terminal_state: present
-    oh_my_zsh_state: present
+    shell_terminal_state: present
+    shell_prompt_state: present
+    terminator_state: present
     current_shell: "{{ lookup('env', 'SHELL') }}"
-    terminal_download_dest: /tmp/ansible/terminal/'
+    current_home: "{{ lookup('env','HOME') }}"
+    starship_install_dir:  "{{ current_home }}/.starship/bin/"
+    shell_promt_terminal_download_dest: /tmp/ansible/terminal/
 
   tasks:
     - name: Install zsh dependencies.
       become: true
       ansible.builtin.apt:
         name: fonts-powerline
-        state: "{{ terminal_state }}"
+        state: "{{ shell_terminal_state }}"
         update_cache: true
         cache_valid_time: 3600
 
@@ -22,82 +25,82 @@
         name: zsh
         update_cache: true
         cache_valid_time: 3600
-        state: "{{ terminal_state }}"
+        state: "{{ shell_terminal_state }}"
 
     - name: Get zsh location.
       ansible.builtin.shell:
         cmd: which zsh
       register: which_zsh
-      when: terminal_state == 'present' or terminal_state == 'latest'
+      when: shell_terminal_state == 'present' or shell_terminal_state == 'latest'
 
     - name: Set zsh as default.
       become: true
       ansible.builtin.shell:
         cmd: chsh -s $(which zsh)
-      when: current_shell != which_zsh.stdout and terminal_state == 'present' or terminal_state == 'latest'
+      when: current_shell != which_zsh.stdout and shell_terminal_state == 'present' or shell_terminal_state == 'latest'
 
-    - name: Uninstall Oh My Zsh.
-      ansible.builtin.file:
-        state: absent
-        path: ~/.oh-my-zsh/
-      when: oh_my_zsh_state == 'absent' or oh_my_zsh_state == 'latest'
+    # - name: Uninstall Starship.
+    #   ansible.builtin.file:
+    #     state: absent
+    #     path: "{{ starship_install_dir }}
+    #   when: shell_prompt_state == 'absent' or shell_prompt_state == 'latest'
 
     - name: Set default shell after uninstall zsh.
       become: true
       ansible.builtin.shell: |
         chsh -s $(which sh)
         unset ZSH
-      when: oh_my_zsh_state == 'absent' or oh_my_zsh_state == 'latest'
+      when: shell_prompt_state == 'absent' or shell_prompt_state == 'latest'
 
-    - name: Check if Oh My Zsh is installed.
-      ansible.builtin.stat:
-        path: ~/.oh-my-zsh/
-      register: oh_my_zsh_directory
+    # - name: Check if Starship is installed.
+    #   ansible.builtin.stat:
+    #     path: "{{ starship_install_dir }}"
+    #   register: shell_prompt_directory
 
-    - name: Create tmp download directory.
-      ansible.builtin.file:
-        state: directory
-        path: "{{ terminal_download_dest }}"
-        mode: '0700'
-      when: oh_my_zsh_state == 'present' and oh_my_zsh_directory.stat.exists == false or oh_my_zsh_state == 'latest'
+    # - name: Create tmp download directory.
+    #   ansible.builtin.file:
+    #     state: directory
+    #     path: "{{ shell_promt_terminal_download_dest }}"
+    #     mode: '0700'
+    #   when: shell_prompt_state == 'present' and shell_prompt_directory.stat.exists == false or shell_prompt_state == 'latest'
 
-    - name: Download Oh My Zsh.
-      ansible.builtin.get_url:
-        url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
-        dest: "{{ terminal_download_dest }}install.sh"
-        mode: '0700'
-      when: oh_my_zsh_state == 'present' and oh_my_zsh_directory.stat.exists == false or oh_my_zsh_state == 'latest'
+    # - name: Download Starship.
+    #   ansible.builtin.get_url:
+    #     url: https://raw.githubusercontent.com/starship/starship/master/install/install.sh
+    #     dest: "{{ shell_promt_terminal_download_dest }}install.sh"
+    #     mode: '0700'
+    #   when: shell_prompt_state == 'present' and shell_prompt_directory.stat.exists == false or shell_prompt_state == 'latest'
 
-    - name: Install Oh My Zsh.
-      ansible.builtin.shell:
-        chdir: "{{ terminal_download_dest }}"
-        cmd: sh install.sh --skip-chsh --unattended --keep-zshrc
-      when: oh_my_zsh_state == 'present' and oh_my_zsh_directory.stat.exists == false or oh_my_zsh_state == 'latest'
+    # - name: Install Starship.
+    #   ansible.builtin.shell:
+    #     chdir: "{{ shell_promt_terminal_download_dest }}"
+    #     cmd: "sh install.sh --bin-dir="{{ starship_install_dir }}" --force -verbose"
+    #   when: shell_prompt_state == 'present' and shell_prompt_directory.stat.exists == false or shell_prompt_state == 'latest'
 
-    - name: Configure Oh My Zsh - theme.
-      ansible.builtin.lineinfile:
-        path: ~/.zshrc
-        regexp: '^ZSH_THEME='
-        line: ZSH_THEME=agnoster
-      when: oh_my_zsh_state == 'present' and oh_my_zsh_directory.stat.exists == false or oh_my_zsh_state == 'latest'
+    # - name: Configure zsh to use Starship.
+    #   ansible.builtin.lineinfile:
+    #     path: ~/.zshrc
+    #     regexp: '^eval "$(starship init zsh)"'
+    #     line: 'eval "$(starship init zsh)"'
+    #   when: shell_prompt_state == 'present' and shell_prompt_directory.stat.exists == false or shell_prompt_state == 'latest'
 
-    - name: Configure Oh My Zsh - python alias.
-      ansible.builtin.lineinfile:
-        path: ~/.zshrc
-        regexp: '^alias python='
-        line: python=python3
-      when: oh_my_zsh_state == 'present' and oh_my_zsh_directory.stat.exists == false or oh_my_zsh_state == 'latest'
+    # - name: Configure Oh My Zsh - python alias.
+    #   ansible.builtin.lineinfile:
+    #     path: ~/.zshrc
+    #     regexp: '^alias python='
+    #     line: python=python3
+    #   when: shell_prompt_state == 'present' and shell_prompt_directory.stat.exists == false or shell_prompt_state == 'latest'
 
-    - name: Delete tmp download directory.
-      ansible.builtin.file:
-        state: absent
-        path: "{{ terminal_download_dest }}"
-      when: oh_my_zsh_state == 'present' and oh_my_zsh_directory.stat.exists == false or oh_my_zsh_state == 'latest'
+    # - name: Delete tmp download directory.
+    #   ansible.builtin.file:
+    #     state: absent
+    #     path: "{{ shell_promt_terminal_download_dest }}"
+    #   when: shell_prompt_state == 'present' and shell_prompt_directory.stat.exists == false or shell_prompt_state == 'latest'
 
-    - name: Install Kitty (terminal).
+    - name: Install terminator
       become: true
       ansible.builtin.apt:
-        name: kitty
+        name: terminator
         update_cache: true
         cache_valid_time: 3600
-        state: "{{ terminal_state }}"
+        state: "{{ terminator_state }}"

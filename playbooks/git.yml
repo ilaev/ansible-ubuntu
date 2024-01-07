@@ -12,10 +12,10 @@
         name: git
         state: "{{ git_state }}"
 
-    - name: Install Meld
+    - name: Install kdiff3
       become: true
       ansible.builtin.apt:
-        name: meld
+        name: kdiff3
         state: "{{ git_state }}"
 
     - name: Configure git - pull.rebase
@@ -49,56 +49,56 @@
     - name: Configure git - merge.tool
       community.general.git_config:
         name: merge.tool
-        value: meld
+        value: kdiff3
         scope: global
         state: present
 
     - name: Configure git - merge.guitool
       community.general.git_config:
         name: merge.guitool
-        value: meld
+        value: kdiff3
         scope: global
         state: present
 
-    - name: Configure git - mergetool.meld.path
+    - name: Configure git - mergetool.kdiff3.path
       community.general.git_config:
-        name: mergetool.meld.path
-        value: /usr/bin/meld
+        name: mergetool.kdiff3.path
+        value: /usr/bin/kdiff3
         scope: global
         state: present
 
-    - name: Configure git - mergetool.meld.cmd
+    - name: Configure git - mergetool.kdiff3.cmd
       community.general.git_config:
-        name: mergetool.meld.cmd
-        value: 'meld "$LOCAL" "$BASE" "$REMOTE" --output "$MERGED"'
+        name: mergetool.kdiff3.cmd
+        value: 'kdiff3 "$LOCAL" "$BASE" "$REMOTE" --output "$MERGED"'
         scope: global
         state: present
 
     - name: Configure git - diff.tool
       community.general.git_config:
         name: diff.tool
-        value: meld
+        value: kdiff3
         scope: global
         state: present
 
     - name: Configure git - merge.guitool
       community.general.git_config:
         name: diff.guitool
-        value: meld
+        value: kdiff3
         scope: global
         state: present
 
-    - name: Configure git - difftool.meld.path
+    - name: Configure git - difftool.kdiff3.path
       community.general.git_config:
-        name: difftool.meld.path
-        value: /usr/bin/meld
+        name: difftool.kdiff3.path
+        value: /usr/bin/kdiff3
         scope: global
         state: present
 
-    - name: Configure git - difftool.meld.cmd
+    - name: Configure git - difftool.kdiff3.cmd
       community.general.git_config:
-        name: difftool.meld.cmd
-        value: 'meld "$LOCAL" "$REMOTE"'
+        name: difftool.kdiff3.cmd
+        value: 'kdiff3 "$LOCAL" "$REMOTE"'
         scope: global
         state: present
 
