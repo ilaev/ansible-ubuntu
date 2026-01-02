@@ -46,6 +46,7 @@
       when: discord_state == 'present'
 
     - name: Uninstall Discord
+      become: true
       ansible.builtin.apt:
         name: discord
         state: absent

@@ -1,0 +1,54 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    android_studio_state: present
+    android_studio_download_dest: "/tmp/ansible/android_studio/"
+    version: 2025.2.2.8
+
+  tasks:
+    - name: Create tmp directory
+      ansible.builtin.file:
+        state: directory
+        path: "{{ android_studio_download_dest }}"
+        mode: '0700'
+      when: android_studio_state == 'present'
+
+    - name: Download android studio archive from official page
+      ansible.builtin.get_url:
+        url: https://redirector.gvt1.com/edgedl/android/studio/ide-zips/{{ version }}/android-studio-{{ version }}-linux.tar.gz
+        dest: "{{ android_studio_download_dest }}android_studio.tar.gz"
+        mode: '0600'
+      when: android_studio_state == 'present'
+
+    - name: Install dependencies
+      become: true
+      ansible.builtin.apt:
+        pkg:
+          - libc6:i386   
+          - libncurses5:i386
+          - libstdc++6:i386
+          - lib32z1 
+          - libbz2-1.0:i386
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+      when: android_studio_state == 'present'
+    
+    - name: Remove existing android studio installation for clean install
+      ansible.builtin.file:
+        state: absent
+        path: /usr/local/android-studio
+      when: android_studio_state == 'present'
+    
+    - name: Install android studio to usr local
+      ansible.builtin.shell: |
+        tar -xvf {{ android_studio_download_dest }}android_studio.tar.gz -C /usr/local/
+      when: android_studio_state == 'present'
+
+    - name: Delete tmp directory
+      ansible.builtin.file:
+        state: absent
+        path: "{{ android_studio_download_dest }}"
+      when: android_studio_state == 'present'

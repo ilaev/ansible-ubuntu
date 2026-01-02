@@ -2,38 +2,20 @@
 - hosts: devpc
 
   vars:
-    obsidian_version: "1.5.3"
     obsidian_state: present
-    obsidian_download_dest: "/tmp/ansible/obsidian/"
 
   tasks:
-    - name: Create tmp directory
-      ansible.builtin.file:
-        state: directory
-        path: "{{ obsidian_download_dest }}"
-        mode: '0700'
-      when: obsidian_state == 'present'
-
-    - name: Download obsidian .deb file from offial page
-      ansible.builtin.get_url:
-        url: "https://github.com/obsidianmd/obsidian-releases/releases/download/v{{ obsidian_version }}/obsidian_{{ obsidian_version }}_amd64.deb"
-        dest: "{{ obsidian_download_dest }}obsidian.deb"
-        mode: '0600'
-
-    - name: Install obsidian
+    - name: Install obsidian via snap
       become: true
-      ansible.builtin.apt:
-        deb: "{{ obsidian_download_dest }}obsidian.deb"
+      community.general.snap:
+        name: obsidian
+        state: present
+        classic: true
       when: obsidian_state == 'present'
 
-    - name: Delete tmp directory
-      ansible.builtin.file:
-        state: absent
-        path: "{{ obsidian_download_dest }}"
-      when: obsidian_state == 'present'
-
-    - name: Uninstall obsidian
-      ansible.builtin.apt:
+    - name: Uninstall obsidian via snap
+      become: true
+      community.general.snap:
         name: obsidian
         state: absent
       when: obsidian_state == 'absent'
