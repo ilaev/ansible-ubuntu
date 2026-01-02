@@ -2,5 +2,3 @@
 collections:
   - name: ansible.posix
   - name: community.general
-roles:
-  - name: gantsign.visual-studio-code-extensions
