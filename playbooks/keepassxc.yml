@@ -1,14 +1,21 @@
 ---
 - hosts: devpc
-  become: true
 
   vars:
-    keepassxc_state: present
+    state: present
 
   tasks:
-    - name: Install KeePassXC
-      ansible.builtin.apt:
+    - name: Install keepassxc via snap
+      become: true
+      community.general.snap:
         name: keepassxc
-        state: "{{ keepassxc_state }}"
-        update_cache: true
-        cache_valid_time: 3600
+        state: present
+        classic: true
+      when: state == 'present'
+
+    - name: Uninstall keepassxc via snap
+      become: true
+      community.general.snap:
+        name: keepassxc
+        state: absent
+      when: state == 'absent'

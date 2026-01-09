@@ -5,17 +5,17 @@
     state: present
 
   tasks:
-    - name: Install brave browser via snap
+    - name: Install bruno via snap
       become: true
       community.general.snap:
-        name: brave
+        name: bruno
         state: present
         classic: false
       when: state == 'present'
 
-    - name: Uninstall brave browser via snap
+    - name: Uninstall bruno via snap
       become: true
       community.general.snap:
-        name: brave
+        name: bruno
         state: absent
       when: state == 'absent'

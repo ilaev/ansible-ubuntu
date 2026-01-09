@@ -19,19 +19,20 @@
         dest: "{{ discord_download_dest }}discord.deb"
         mode: '0600'
 
-    - name: Install dependencies
-      become: true
-      ansible.builtin.apt:
-        pkg:
-          - libatomic1
-          - libgconf-2-4
-          - libc++1
-          - gconf2-common
-          - libc++abi1
-        state: present
-        update_cache: true
-        cache_valid_time: 3600
-      when: discord_state == 'present'
+    # Seems to be only needed on Ubuntu 22
+    # - name: Install dependencies
+    #   become: true
+    #   ansible.builtin.apt:
+    #     pkg:
+    #       #- libatomic1
+    #       #- libgconf-2-4
+    #       #- libc++1
+    #       #- gconf2-common
+    #       #- libc++abi1
+    #     state: present
+    #     update_cache: true
+    #     cache_valid_time: 3600
+    #   when: discord_state == 'present'
 
     - name: Install Discord
       become: true
