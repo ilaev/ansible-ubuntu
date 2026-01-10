@@ -64,6 +64,19 @@
         cache_valid_time: 3600
         state: "{{ docker_state }}"
 
+    - name: Ensure docker group exists
+      ansible.builtin.group:
+        name: docker
+        state: present
+      when: docker_state == 'present'
+
+    - name: Add user to docker group
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: true
+      when: docker_state == 'present'
+
     - name: Delete tmp download directory.
       ansible.builtin.file:
         state: absent

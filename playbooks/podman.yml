@@ -1,0 +1,65 @@
+---
+- hosts: devpc
+
+  vars:
+    podman_state: present
+
+  tasks:
+    # Prerequisites: Install Flatpak and Podman
+    - name: Install Flatpak
+      become: true
+      ansible.builtin.apt:
+        name: flatpak
+        state: "{{ podman_state }}"
+        update_cache: true
+        cache_valid_time: 3600
+      when: podman_state == 'present'
+
+    - name: Install Podman
+      become: true
+      ansible.builtin.apt:
+        name: podman
+        state: "{{ podman_state }}"
+        update_cache: true
+        cache_valid_time: 3600
+      when: podman_state == 'present'
+
+    # Add Flathub repository
+    - name: Add Flathub repository
+      community.general.flatpak_remote:
+        name: flathub
+        state: present
+        flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
+        method: user
+      when: podman_state == 'present'
+
+    # Install Podman Desktop from Flathub
+    - name: Install Podman Desktop from Flathub
+      community.general.flatpak:
+        name: io.podman_desktop.PodmanDesktop
+        state: present
+        remote: flathub
+        method: user
+      when: podman_state == 'present'
+
+    # Uninstall tasks
+    - name: Uninstall Podman Desktop
+      community.general.flatpak:
+        name: io.podman_desktop.PodmanDesktop
+        state: absent
+        method: user
+      when: podman_state == 'absent'
+
+    - name: Uninstall Podman
+      become: true
+      ansible.builtin.apt:
+        name: podman
+        state: absent
+      when: podman_state == 'absent'
+
+    - name: Uninstall Flatpak
+      become: true
+      ansible.builtin.apt:
+        name: flatpak
+        state: absent
+      when: podman_state == 'absent'
