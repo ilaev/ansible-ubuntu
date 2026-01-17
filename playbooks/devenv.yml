@@ -1,0 +1,30 @@
+---
+- hosts: devpc
+  become: false
+
+  vars:
+    devenv_state: present
+
+  tasks:
+    - name: Check if devenv is already installed
+      ansible.builtin.shell:
+        cmd: which devenv
+      register: devenv_check
+      ignore_errors: true
+      changed_when: false
+
+    - name: Install devenv via Nix
+      ansible.builtin.shell:
+        cmd: nix profile install nixpkgs#devenv
+      environment:
+        PATH: "{{ ansible_env.PATH }}:/nix/var/nix/profiles/default/bin"
+      when: devenv_state == 'present' and devenv_check.rc != 0
+
+    # Uninstall tasks
+    - name: Uninstall devenv
+      ansible.builtin.shell:
+        cmd: nix profile remove devenv
+      environment:
+        PATH: "{{ ansible_env.PATH }}:/nix/var/nix/profiles/default/bin"
+      when: devenv_state == 'absent' and devenv_check.rc == 0
+      ignore_errors: true
