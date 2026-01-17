@@ -1,0 +1,23 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    nix_state: present
+
+  tasks:
+    - name: Check if Nix is already installed
+      ansible.builtin.stat:
+        path: /nix
+      register: nix_directory
+
+    - name: Install Determinate Nix
+      ansible.builtin.shell:
+        cmd: curl -fsSL https://install.determinate.systems/nix | sh -s -- install --no-confirm
+      when: nix_state == 'present' and not nix_directory.stat.exists
+
+    # Uninstall tasks
+    - name: Uninstall Determinate Nix
+      ansible.builtin.shell:
+        cmd: /nix/nix-installer uninstall --no-confirm
+      when: nix_state == 'absent' and nix_directory.stat.exists
