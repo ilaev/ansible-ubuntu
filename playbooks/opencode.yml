@@ -1,0 +1,40 @@
+---
+- hosts: devpc
+
+  vars:
+    opencode_state: present
+    opencode_download_dest: "/tmp/ansible/opencode/"
+
+  tasks:
+    - name: Create tmp directory
+      ansible.builtin.file:
+        state: directory
+        path: "{{ opencode_download_dest }}"
+        mode: '0700'
+      when: opencode_state == 'present'
+
+    - name: Download OpenCode Desktop .deb file
+      ansible.builtin.get_url:
+        url: https://opencode.ai/download/stable/linux-x64-deb
+        dest: "{{ opencode_download_dest }}opencode.deb"
+        mode: '0600'
+      when: opencode_state == 'present'
+
+    - name: Install OpenCode Desktop
+      become: true
+      ansible.builtin.apt:
+        deb: "{{ opencode_download_dest }}opencode.deb"
+      when: opencode_state == 'present'
+
+    - name: Delete tmp directory
+      ansible.builtin.file:
+        state: absent
+        path: "{{ opencode_download_dest }}"
+      when: opencode_state == 'present'
+
+    - name: Uninstall OpenCode Desktop
+      become: true
+      ansible.builtin.apt:
+        name: opencode
+        state: absent
+      when: opencode_state == 'absent'
