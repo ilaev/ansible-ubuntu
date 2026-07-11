@@ -1,0 +1,40 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    handy_state: present
+    handy_download_dest: "/tmp/ansible/handy/"
+    version: "0.8.3"
+
+  tasks:
+    - name: Create tmp directory
+      ansible.builtin.file:
+        state: directory
+        path: "{{ handy_download_dest }}"
+        mode: '0700'
+      when: handy_state == 'present'
+
+    - name: Download Handy .deb file
+      ansible.builtin.get_url:
+        url: "https://github.com/cjpais/Handy/releases/download/v{{ version }}/Handy_{{ version }}_amd64.deb"
+        dest: "{{ handy_download_dest }}handy.deb"
+        mode: '0600'
+      when: handy_state == 'present'
+
+    - name: Install Handy
+      ansible.builtin.apt:
+        deb: "{{ handy_download_dest }}handy.deb"
+      when: handy_state == 'present'
+
+    - name: Delete tmp directory
+      ansible.builtin.file:
+        state: absent
+        path: "{{ handy_download_dest }}"
+      when: handy_state == 'present'
+
+    - name: Uninstall Handy
+      ansible.builtin.apt:
+        name: handy
+        state: absent
+      when: handy_state == 'absent'

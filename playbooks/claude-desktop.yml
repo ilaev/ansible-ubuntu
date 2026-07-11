@@ -1,0 +1,52 @@
+---
+- hosts: devpc
+
+  vars:
+    claude_desktop_state: present
+
+  tasks:
+    - name: Add Claude Desktop GPG key
+      become: true
+      ansible.builtin.get_url:
+        url: https://downloads.claude.ai/claude-desktop/key.asc
+        dest: /usr/share/keyrings/claude-desktop-archive-keyring.asc
+        mode: '0644'
+      when: claude_desktop_state == 'present'
+
+    - name: Add Claude Desktop apt repository
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/claude-desktop-archive-keyring.asc] https://downloads.claude.ai/claude-desktop/apt/stable stable main"
+        state: present
+        filename: claude-desktop
+      when: claude_desktop_state == 'present'
+
+    - name: Install Claude Desktop
+      become: true
+      ansible.builtin.apt:
+        name: claude-desktop
+        state: present
+        update_cache: true
+      when: claude_desktop_state == 'present'
+
+    - name: Uninstall Claude Desktop
+      become: true
+      ansible.builtin.apt:
+        name: claude-desktop
+        state: absent
+      when: claude_desktop_state == 'absent'
+
+    - name: Remove Claude Desktop apt repository
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/claude-desktop-archive-keyring.asc] https://downloads.claude.ai/claude-desktop/apt/stable stable main"
+        state: absent
+        filename: claude-desktop
+      when: claude_desktop_state == 'absent'
+
+    - name: Remove Claude Desktop GPG key
+      become: true
+      ansible.builtin.file:
+        state: absent
+        path: /usr/share/keyrings/claude-desktop-archive-keyring.asc
+      when: claude_desktop_state == 'absent'
