@@ -5,7 +5,7 @@
   vars:
     opencode_state: present
     opencode_download_dest: "/tmp/ansible/opencode/"
-    version: "1.17.13"
+    version: "1.18.4"
 
   tasks:
     - name: Create tmp directory

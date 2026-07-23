@@ -1,36 +1,25 @@
 # Setup PC with Ansible
 
-Ansible playbooks to setup my PC for software development. Latest Ubuntu/Debian only. 
+Ansible playbooks to setup my PC for software development. Latest Ubuntu/Debian only.
 
 # Requirements
 
-To install ansible in a python virtual environment, first install python3-venv.
+Ubuntu 26:
+> export ANSIBLE_BECOME_EXE=sudo.ws
+Because sudo-rs (rewrite in rust and ansible have some issues)
+
+Enter the development shell which provides Python, Ansible, and other tools:
 
 ```
-sudo apt-get install python3-venv
-```
-Afterwards create and activate the python virtual environment with:
-
-```
-cd ~ 
-python -m venv devops
-source ~/devops/bin/activate
+cd /path/to/ansible-ubuntu
+devenv shell
 ```
 
-Then install ansible:
-
-```
-python -m pip install ansible
-```
-
-Then download this repo and unarchive in your desired directory.
-
-Install third-party roles/collections before executing any playbooks:
+Then install third-party roles/collections before executing any playbooks:
 
 ```
 ansible-galaxy install -r ./requirements.yml
 ```
-
 
 # Execute Playbooks
 
