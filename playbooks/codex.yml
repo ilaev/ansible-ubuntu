@@ -1,0 +1,40 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    codex_state: present
+    codex_download_dest: "/tmp/ansible/codex/"
+    codex_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }}"
+
+  tasks:
+    - name: Create tmp directory
+      ansible.builtin.file:
+        state: directory
+        path: "{{ codex_download_dest }}"
+        mode: '0700'
+      when: codex_state == 'present'
+
+    - name: Download Codex .deb file
+      ansible.builtin.get_url:
+        url: "https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_{{ codex_arch }}.deb"
+        dest: "{{ codex_download_dest }}chatgpt_{{ codex_arch }}.deb"
+        mode: '0600'
+      when: codex_state == 'present'
+
+    - name: Install Codex
+      ansible.builtin.apt:
+        deb: "{{ codex_download_dest }}chatgpt_{{ codex_arch }}.deb"
+      when: codex_state == 'present'
+
+    - name: Delete tmp directory
+      ansible.builtin.file:
+        state: absent
+        path: "{{ codex_download_dest }}"
+      when: codex_state == 'present'
+
+    - name: Uninstall Codex
+      ansible.builtin.apt:
+        name: chatgpt
+        state: absent
+      when: codex_state == 'absent'
