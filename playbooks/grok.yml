@@ -1,0 +1,20 @@
+---
+- hosts: devpc
+  become: false
+
+  vars:
+    grok_state: present
+
+  tasks:
+    - name: Install Grok
+      ansible.builtin.shell: >
+        curl -fsSL https://x.ai/cli/install.sh | bash
+      args:
+        creates: "{{ ansible_env.HOME }}/.grok/bin/grok"
+      when: grok_state == 'present'
+
+    - name: Uninstall Grok
+      ansible.builtin.file:
+        state: absent
+        path: "{{ ansible_env.HOME }}/.grok"
+      when: grok_state == 'absent'
