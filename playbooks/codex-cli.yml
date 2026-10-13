@@ -1,0 +1,20 @@
+---
+- hosts: devpc
+  become: false
+
+  vars:
+    codex_cli_state: present
+
+  tasks:
+    - name: Install Codex CLI
+      ansible.builtin.shell: >
+        CODEX_NON_INTERACTIVE=true curl -fsSL https://chatgpt.com/codex/install.sh | sh
+      args:
+        creates: "{{ ansible_env.HOME }}/.local/bin/codex"
+      when: codex_cli_state == 'present'
+
+    - name: Uninstall Codex CLI
+      ansible.builtin.file:
+        state: absent
+        path: "{{ ansible_env.HOME }}/.local/bin/codex"
+      when: codex_cli_state == 'absent'
