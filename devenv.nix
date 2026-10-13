@@ -11,6 +11,7 @@
 pkgs.git
 pkgs.ansible
 pkgs.sshpass
+pkgs.python314
 ];
 
   # https://devenv.sh/languages/
