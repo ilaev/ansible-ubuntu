@@ -1,0 +1,40 @@
+---
+- hosts: devpc
+  become: true
+
+  vars:
+    paseo_state: present
+    paseo_download_dest: "/tmp/ansible/paseo/"
+    version: "0.11.2"
+
+  tasks:
+    - name: Create tmp directory
+      ansible.builtin.file:
+        state: directory
+        path: "{{ paseo_download_dest }}"
+        mode: '0700'
+      when: paseo_state == 'present'
+
+    - name: Download Paseo .deb file
+      ansible.builtin.get_url:
+        url: "https://github.com/getpaseo/paseo/releases/download/v{{ version }}/Paseo-{{ version }}-amd64.deb"
+        dest: "{{ paseo_download_dest }}paseo.deb"
+        mode: '0600'
+      when: paseo_state == 'present'
+
+    - name: Install Paseo
+      ansible.builtin.apt:
+        deb: "{{ paseo_download_dest }}paseo.deb"
+      when: paseo_state == 'present'
+
+    - name: Delete tmp directory
+      ansible.builtin.file:
+        state: absent
+        path: "{{ paseo_download_dest }}"
+      when: paseo_state == 'present'
+
+    - name: Uninstall Paseo
+      ansible.builtin.apt:
+        name: paseo
+        state: absent
+      when: paseo_state == 'absent'
