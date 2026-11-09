@@ -5,6 +5,7 @@
   vars:
     opencode_state: present
     opencode_download_dest: "/tmp/ansible/opencode/"
+    version: "2.2.6"
 
   tasks:
     - name: Create tmp directory
@@ -16,7 +17,7 @@
 
     - name: Download OpenCode Desktop .deb file
       ansible.builtin.get_url:
-        url: "https://opencode.ai/update/api/latest/desktop/opencode/opencode-desktop-linux-amd64.deb"
+        url: "https://github.com/anomalyco/opencode/releases/download/v{{ version }}/opencode-desktop-linux-amd64.deb"
         dest: "{{ opencode_download_dest }}opencode.deb"
         mode: '0600'
       when: opencode_state == 'present'
